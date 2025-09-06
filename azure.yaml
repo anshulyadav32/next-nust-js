@@ -1,0 +1,12 @@
+name: fullstack-auth
+services:
+  frontend:
+    project: ./frontend
+    language: js
+    host: appservice
+    dist: .output
+  backend:
+    project: ./backend
+    language: js
+    host: appservice
+    dist: .next
