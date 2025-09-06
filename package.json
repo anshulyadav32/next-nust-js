@@ -1,0 +1,41 @@
+{
+  "name": "fullstack-auth-system",
+  "version": "1.0.0",
+  "description": "Full-stack authentication system with Nuxt.js frontend and Next.js backend",
+  "main": "start-dev.js",
+  "scripts": {
+    "dev": "node start-dev.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "npm run start:backend",
+    "start:frontend": "cd frontend && npm run preview",
+    "start:backend": "cd backend && npm start",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:generate": "cd backend && npx prisma generate",
+    "db:studio": "cd backend && npx prisma studio"
+  },
+  "keywords": [
+    "authentication",
+    "full-stack",
+    "nuxt",
+    "nextjs",
+    "vue",
+    "react",
+    "prisma",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/fullstack-auth-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/fullstack-auth-system/issues"
+  },
+  "homepage": "https://github.com/yourusername/fullstack-auth-system#readme"
+}
