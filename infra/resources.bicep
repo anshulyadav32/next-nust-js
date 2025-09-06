@@ -1,6 +1,6 @@
 param location string = resourceGroup().location
 param tags object = {}
-param resourceToken string
+param resourceToken string = uniqueString(subscription().id, location, environmentName)
 param applicationInsightsSamplingRate int = 10
 param containerRegistryPullSkuName string = 'Basic'
 param nitroPort string = '3002'
