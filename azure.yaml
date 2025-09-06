@@ -1,22 +1,14 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/refs/heads/main/schemas/v1.0/azure.yaml.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: fullstack-auth
-
-infra:
-  provider: bicep
-
+metadata:
+  template: fullstack-auth@0.0.1-beta
 services:
-  frontend:
-    project: frontend
-    host: containerapp
-    language: ts
-    docker:
-      path: Dockerfile
-      context: ./
   backend:
-    project: backend
-    host: containerapp
+    project: ./backend
     language: ts
-    docker:
-      path: Dockerfile
-      context: ./
+    host: containerapp
+  frontend:
+    project: ./frontend
+    language: ts
+    host: containerapp

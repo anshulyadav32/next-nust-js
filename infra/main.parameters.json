@@ -12,7 +12,7 @@
       "value": "rg-${AZURE_ENV_NAME}"
     },
     "nextauthUrl": {
-      "value": ""
+      "value": "https://placeholder.com"
     },
     "nitroPort": {
       "value": "3002"

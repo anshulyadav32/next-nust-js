@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=dev-secret-key-change-in-production
+      - DATABASE_URL=file:./prisma/dev.db
+    networks:
+      - fullstack-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - NUXT_API_BASE_URL=http://backend:3000
+    depends_on:
+      - backend
+    networks:
+      - fullstack-network
+
+networks:
+  fullstack-network:
+    driver: bridge

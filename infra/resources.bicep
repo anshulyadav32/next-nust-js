@@ -1,20 +1,20 @@
 param location string = resourceGroup().location
 param tags object = {}
-param resourceToken string = uniqueString(subscription().id, location, environmentName)
+param resourceToken string
 param applicationInsightsSamplingRate int = 10
 param containerRegistryPullSkuName string = 'Basic'
 param nitroPort string = '3002'
 param nextauthUrl string
 
 // Resource names
-var containerRegistryName = 'acr${resourceToken}'
-var logAnalyticsName = 'log${resourceToken}'
-var applicationInsightsName = 'appi${resourceToken}'
-var keyVaultName = 'kv${resourceToken}'
-var managedIdentityName = 'mi${resourceToken}'
-var containerAppsEnvironmentName = 'cae${resourceToken}'
-var frontendContainerAppName = 'cafrontend${resourceToken}'
-var backendContainerAppName = 'cabackend${resourceToken}'
+var containerRegistryName = 'az-acr-${resourceToken}'
+var logAnalyticsName = 'az-log-${resourceToken}'
+var applicationInsightsName = 'az-appi-${resourceToken}'
+var keyVaultName = 'az-kv-${resourceToken}'
+var managedIdentityName = 'az-mi-${resourceToken}'
+var containerAppsEnvironmentName = 'az-cae-${resourceToken}'
+var frontendContainerAppName = 'az-ca-frontend-${resourceToken}'
+var backendContainerAppName = 'az-ca-backend-${resourceToken}'
 
 // Log Analytics Workspace
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
