@@ -1,0 +1,174 @@
+// Infrastructure definition for fullstack authentication system
+// Deploys:
+// - Azure App Service for frontend
+// - Azure App Service for backend
+// - Azure PostgreSQL for database
+// - Azure Key Vault for secrets
+
+// Parameters
+@description('Environment name')
+param environmentName string = 'dev'
+
+@description('Primary Azure region')
+param location string = resourceGroup().location
+
+@description('Tags for all resources')
+param tags object = {
+  application: 'fullstack-auth'
+  environment: environmentName
+  'azd-env-name': environmentName
+}
+
+// Azure recommends using this exact format for the resource token
+var resourceToken = uniqueString(subscription().id, resourceGroup().id)
+
+// Resource names
+var appServicePlanName = 'plan-${environmentName}-${resourceToken}'
+var frontendAppName = 'app-frontend-${environmentName}-${resourceToken}'
+var backendAppName = 'app-backend-${environmentName}-${resourceToken}'
+var keyVaultName = 'kv-${environmentName}-${resourceToken}'
+var managedIdentityName = 'mi-${environmentName}-${resourceToken}'
+
+// App Service Plan (shared between frontend and backend)
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: appServicePlanName
+  location: location
+  tags: tags
+  sku: {
+    name: 'F1' // Free tier - adjust as needed
+  }
+  properties: {}
+}
+
+// Frontend App Service
+resource frontendAppService 'Microsoft.Web/sites@2022-09-01' = {
+  name: frontendAppName
+  location: location
+  tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'NUXT_PUBLIC_API_BASE_URL'
+          value: 'https://${backendAppName}.azurewebsites.net'
+        }
+        {
+          name: 'NUXT_API_BASE_URL'
+          value: 'https://${backendAppName}.azurewebsites.net'
+        }
+      ]
+      cors: {
+        allowedOrigins: ['*'] // Consider restricting in production
+        supportCredentials: true
+      }
+      nodeVersion: '20-lts'
+    }
+  }
+}
+
+// User-assigned managed identity
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: managedIdentityName
+  location: location
+  tags: tags
+}
+
+// Backend App Service
+resource backendAppService 'Microsoft.Web/sites@2022-09-01' = {
+  name: backendAppName
+  location: location
+  tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AZURE_POSTGRES_HOST'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/AZURE-POSTGRES-HOST)'
+        }
+        {
+          name: 'AZURE_POSTGRES_PORT' 
+          value: '5432'
+        }
+        {
+          name: 'AZURE_POSTGRES_USER'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/AZURE-POSTGRES-USER)'
+        }
+        {
+          name: 'AZURE_POSTGRES_DATABASE'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/AZURE-POSTGRES-DATABASE)'
+        }
+        {
+          name: 'AZURE_POSTGRES_PASSWORD'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/AZURE-POSTGRES-PASSWORD)'
+        }
+        {
+          name: 'AZURE_POSTGRES_SSL'
+          value: 'true'
+        }
+        {
+          name: 'DATABASE_URL'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/DATABASE-URL)'
+        }
+        {
+          name: 'NEXTAUTH_URL'
+          value: 'https://${backendAppName}.azurewebsites.net'
+        }
+        {
+          name: 'NEXTAUTH_SECRET'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/NEXTAUTH-SECRET)'
+        }
+      ]
+      cors: {
+        allowedOrigins: ['https://${frontendAppName}.azurewebsites.net']
+        supportCredentials: true
+      }
+      nodeVersion: '20-lts'
+    }
+  }
+}
+
+// Key Vault for secrets
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: keyVaultName
+  location: location
+  tags: tags
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    enableRbacAuthorization: false
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: managedIdentity.properties.principalId
+        permissions: {
+          secrets: ['get', 'list']
+        }
+      }
+    ]
+  }
+}
+
+// Output the app URLs
+output frontendUrl string = 'https://${frontendAppService.properties.defaultHostName}'
+output backendUrl string = 'https://${backendAppService.properties.defaultHostName}'
+output keyVaultName string = keyVault.name
+output RESOURCE_GROUP_ID string = resourceGroup().id

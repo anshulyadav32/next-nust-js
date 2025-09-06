@@ -1,117 +1,62 @@
-// main.bicep.new - Template file
-@description('The environment name')
-param environmentName string = 'dev'
+targetScope = 'subscription'
 
-@description('The location for all resources')
-param location string = resourceGroup().location
+@minLength(1)
+@maxLength(64)
+@description('Environment name')
+param environmentName string
 
-var resourceToken = uniqueString(subscription().id, resourceGroup().id, location, environmentName)
+@minLength(1)
+@description('Primary Azure region')
+param location string = 'eastus'
+
+@description('Resource group name')
+param resourceGroupName string = 'rg-${environmentName}'
+
+@description('Application insights sampling rate')
+param applicationInsightsSamplingRate int = 10
+
+@description('Container registry sku')
+param containerRegistryPullSkuName string = 'Basic'
+
+@description('Environment variables for frontend service')
+param nitroPort string = '3002'
+
+@description('Environment variables for backend service')
+param nextauthUrl string
 
 // Tags
 var tags = {
+  application: 'fullstack-auth'
+  environment: environmentName
   'azd-env-name': environmentName
 }
 
-// Create a user-assigned managed identity
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: 'id-${environmentName}-${resourceToken}'
+// Resource naming
+var resourceToken = uniqueString(subscription().id, location, environmentName)
+
+// Resource group
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
+  name: resourceGroupName
   location: location
   tags: tags
 }
 
-// App Service Plan
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: 'plan-${environmentName}-${resourceToken}'
-  location: location
-  tags: tags
-  sku: {
-    name: 'B1'
+// Deploy resources to the resource group
+module resources 'resources.bicep' = {
+  scope: resourceGroup
+  name: 'resources'
+  params: {
+    location: location
+    tags: tags
+    resourceToken: resourceToken
+    applicationInsightsSamplingRate: applicationInsightsSamplingRate
+    containerRegistryPullSkuName: containerRegistryPullSkuName
+    nitroPort: nitroPort
+    nextauthUrl: nextauthUrl
   }
 }
 
-// Frontend App Service
-resource frontendApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'frontend-${environmentName}-${resourceToken}'
-  location: location
-  tags: tags
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
-  }
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'NUXT_PUBLIC_API_BASE_URL'
-          value: 'https://${backendApp.properties.defaultHostName}'
-        }
-      ]
-      cors: {
-        allowedOrigins: ['*']
-        supportCredentials: true
-      }
-    }
-  }
-}
-
-// Backend App Service
-resource backendApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'backend-${environmentName}-${resourceToken}'
-  location: location
-  tags: tags
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
-  }
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'NEXTAUTH_URL'
-          value: 'https://${backendApp.properties.defaultHostName}'
-        }
-      ]
-      cors: {
-        allowedOrigins: ['https://${frontendApp.properties.defaultHostName}']
-        supportCredentials: true
-      }
-    }
-  }
-}
-
-// Key Vault
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'kv-${environmentName}-${resourceToken}'
-  location: location
-  tags: tags
-  properties: {
-    tenantId: subscription().tenantId
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: managedIdentity.properties.principalId
-        permissions: {
-          secrets: ['get', 'list']
-        }
-      }
-    ]
-  }
-}
-
-// Required outputs
-output frontendUrl string = 'https://${frontendApp.properties.defaultHostName}'
-output backendUrl string = 'https://${backendApp.properties.defaultHostName}'
-output keyVaultName string = keyVault.name
-output RESOURCE_GROUP_ID string = resourceGroup().id
+// Outputs
+output RESOURCE_GROUP_ID string = resourceGroup.id
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
+output AZURE_CONTAINER_REGISTRY_NAME string = resources.outputs.AZURE_CONTAINER_REGISTRY_NAME
