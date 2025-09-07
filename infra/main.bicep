@@ -9,6 +9,9 @@ param environmentName string
 @description('Primary Azure region')
 param location string = 'eastus'
 
+// Explicit location for subscription-level deployment
+var deploymentLocation = location
+
 @description('Resource group name')
 param resourceGroupName string = 'rg-${environmentName}'
 

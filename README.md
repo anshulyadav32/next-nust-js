@@ -154,4 +154,17 @@ npx prisma generate
 
 ---
 
+## 📝 Deployment Notes
+
+### Azure Container Apps
+- See [DEPLOYMENT-SUMMARY.md](./DEPLOYMENT-SUMMARY.md) for deployment details
+- Due to regional quota limits, the application is deployed to `West US` region
+- See [REGION-CHANGE-NOTE.md](./REGION-CHANGE-NOTE.md) for more information
+
+### Docker Local Development
+- Local development uses Docker Compose for easy setup
+- Run `./start-docker.sh` or `.\start-docker.ps1` to start the application locally
+
+---
+
 **🎉 Built with ❤️ using Vue.js + Next.js + TypeScript + Prisma**

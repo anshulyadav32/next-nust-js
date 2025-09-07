@@ -76,7 +76,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-// Container Apps Environment
+// Container Apps Environment - Create a new environment in the new resource group
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: containerAppsEnvironmentName
   location: location
