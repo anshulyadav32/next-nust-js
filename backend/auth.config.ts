@@ -79,6 +79,8 @@ export default {
   pages: {
     signIn: '/auth/signin',
   },
+  // Trust localhost for development
+  trustHost: true,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
