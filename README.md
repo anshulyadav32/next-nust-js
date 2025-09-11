@@ -5,11 +5,14 @@
 This project uses a **modern full-stack architecture** combining the best of both Vue.js and React ecosystems:
 
 ```
-fullstack-auth/
+next-nust-js/
 ├── 🎨 frontend/          # Nuxt.js (Vue 3) - Client Application
 ├── 🔧 backend/           # Next.js API - Authentication & Database
 ├── 📦 shared/            # Shared types, utilities, constants
-└── 📚 docs/              # Documentation
+├── 🏗️ infra/            # Infrastructure configuration
+├── 📄 .env.*.example     # Environment configuration templates
+├── 🐳 docker-compose.yml # Docker setup for containerized deployment
+└── 🚀 start-*.js/sh      # Development and deployment scripts
 ```
 
 ## 🛠️ Technology Stack
@@ -61,27 +64,84 @@ fullstack-auth/
 
 ## 🚀 Quick Start
 
-### 1. Backend Setup (Next.js API)
+### Development Setup
+
+1. **Clone and Install Dependencies**
 ```bash
-cd backend
+git clone https://github.com/anshulyadav32/next-nust-js.git
+cd next-nust-js
 npm install
-cp .env.example .env
-# Configure your environment variables
-npm run dev
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-### 2. Frontend Setup (Nuxt.js)
+2. **Environment Configuration**
 ```bash
-cd frontend  
-npm install
-npm run dev
+# Copy environment templates
+cp .env.local.example .env.local
+cp .env.production.example .env.production
+
+# Edit the environment files with your actual values
+# .env.local - for development
+# .env.production - for production deployment
 ```
 
-### 3. Database Setup
+3. **Database Setup (Backend)**
 ```bash
 cd backend
 npx prisma migrate dev
 npx prisma generate
+```
+
+4. **Start Development Servers**
+
+**Option A: Using Node.js directly**
+```bash
+# Terminal 1: Start backend (http://localhost:3001)
+cd backend
+npm run dev
+
+# Terminal 2: Start frontend (http://localhost:3002)  
+cd frontend
+npm run dev
+```
+
+**Option B: Using the development launcher**
+```bash
+# Starts both backend and frontend automatically
+node start-dev.js
+```
+
+**Option C: Using Docker**
+```bash
+# Start with Docker Compose
+./start-docker.sh
+# or
+docker compose up --build
+```
+
+### Production Deployment
+
+1. **Build the Applications**
+```bash
+# Build backend
+cd backend
+npm run build
+
+# Build frontend
+cd frontend
+npm run build
+```
+
+2. **Start Production Servers**
+```bash
+# Start backend (production mode)
+cd backend
+npm start
+
+# Start frontend (production mode)
+cd frontend
+npm start
 ```
 
 ## 📊 API Endpoints
@@ -107,14 +167,33 @@ npx prisma generate
 ## 🔧 Development
 
 ### Frontend (Nuxt.js)
-- **Dev Server:** http://localhost:3000
+- **Dev Server:** http://localhost:3002
 - **Build:** `npm run build`
+- **Start:** `npm start` (production mode)
 - **Preview:** `npm run preview`
 
 ### Backend (Next.js)
 - **API Server:** http://localhost:3001
-- **Build:** `npm run build`
-- **Database:** `npm run db:studio`
+- **Build:** `npm run build` 
+- **Start:** `npm start` (production mode)
+- **Database:** `npx prisma studio`
+
+### Environment Files
+- **`.env.local.example`** - Development configuration template
+- **`.env.production.example`** - Production configuration template
+- Copy these files and remove `.example` extension, then configure with your actual values
+
+### Docker Development
+```bash
+# Start all services
+./start-docker.sh
+
+# Stop all services  
+docker compose down
+
+# View logs
+docker compose logs -f
+```
 
 ## 🌐 Deployment
 
@@ -156,14 +235,35 @@ npx prisma generate
 
 ## 📝 Deployment Notes
 
-### Azure Container Apps
-- See [DEPLOYMENT-SUMMARY.md](./DEPLOYMENT-SUMMARY.md) for deployment details
-- Due to regional quota limits, the application is deployed to `West US` region
-- See [REGION-CHANGE-NOTE.md](./REGION-CHANGE-NOTE.md) for more information
+### Docker Deployment
+- **Local Development:** Use `./start-docker.sh` for containerized development
+- **Production:** Configure `.env.production` and deploy with Docker Compose
+- **Ports:** Frontend (3002), Backend (3001)
 
-### Docker Local Development
-- Local development uses Docker Compose for easy setup
-- Run `./start-docker.sh` or `.\start-docker.ps1` to start the application locally
+### Cloud Deployment Options
+
+#### Frontend (Nuxt.js)
+- **Vercel** (recommended)
+- **Netlify** 
+- **Cloudflare Pages**
+- **Azure Container Apps**
+
+#### Backend (Next.js)
+- **Vercel** (recommended)
+- **Railway**
+- **Heroku** 
+- **Azure Container Apps**
+
+#### Database
+- **PostgreSQL:** Vercel Postgres, PlanetScale, Supabase
+- **Development:** SQLite (included in backend)
+
+### Environment Setup
+1. Copy `.env.local.example` → `.env.local` for development
+2. Copy `.env.production.example` → `.env.production` for production
+3. Configure OAuth providers (Google, GitHub)
+4. Set up database URLs and SMTP settings
+5. Generate secure `NEXTAUTH_SECRET` for production
 
 ---
 
