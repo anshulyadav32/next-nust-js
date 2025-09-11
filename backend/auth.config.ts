@@ -80,7 +80,7 @@ export default {
     signIn: '/auth/signin',
   },
   // Trust localhost for development
-  trustedHosts: process.env.NODE_ENV === 'production' ? ['your-production-domain.com'] : ['localhost:3001'],
+  trustHost: true,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
