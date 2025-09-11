@@ -9,6 +9,11 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
   
+  // Global CSS
+  css: [
+    '~/app/assets/css/main.css'
+  ],
+  
   // Runtime Config
   runtimeConfig: {
     public: {
@@ -19,9 +24,8 @@ export default defineNuxtConfig({
   // Specify app directory structure
   srcDir: './',
   dir: {
-    pages: 'pages',
-    layouts: 'layouts',
-    middleware: 'middleware',
+    pages: 'app/pages',
+    layouts: 'app/layouts',
   },
   
   // Server options handled via .env file

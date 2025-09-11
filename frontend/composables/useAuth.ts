@@ -1,18 +1,60 @@
 // Authentication composable for Nuxt.js frontend
-import type { 
-  AuthState, 
-  User, 
-  LoginResponse, 
-  RegisterData, 
-  AuthCredentials,
-  PasswordResetRequest,
-  PasswordResetSubmit,
-  ApiResponse 
-} from '~/../../shared/types'
+// Define types locally since shared types may not be available
+interface User {
+  id: string
+  email: string
+  name?: string
+  role: 'USER' | 'ADMIN'
+  emailVerified: boolean
+  profileImage?: string
+  createdAt: Date | string
+  updatedAt: Date | string
+}
+
+interface AuthState {
+  user: User | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
+}
+
+interface LoginResponse {
+  success: boolean
+  message?: string
+  user?: User
+}
+
+interface RegisterData {
+  name?: string
+  email: string
+  password: string
+}
+
+interface AuthCredentials {
+  email: string
+  password: string
+}
+
+interface PasswordResetRequest {
+  email: string
+}
+
+interface PasswordResetSubmit {
+  token: string
+  password: string
+}
+
+interface ApiResponse<T = any> {
+  success: boolean
+  data?: T
+  error?: string
+  message?: string
+}
 
 export const useAuth = () => {
   const config = useRuntimeConfig()
-  const apiBase = config.public.apiBase
+  // Use local API endpoints for demo
+  const apiBase = '/api'
 
   // Reactive state
   const authState = ref<AuthState>({
@@ -49,7 +91,7 @@ export const useAuth = () => {
     authState.value.error = null
 
     try {
-      const response = await apiCall<{ user: User }>('/api/auth/session')
+      const response = await apiCall<{ user: User }>('/auth/session')
       
       if (response.success && response.data?.user) {
         authState.value.user = response.data.user
@@ -73,7 +115,7 @@ export const useAuth = () => {
     authState.value.error = null
 
     try {
-      const response = await apiCall<{ user: User }>('/api/auth/register', {
+      const response = await apiCall<{ user: User }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(userData)
       })
@@ -81,7 +123,7 @@ export const useAuth = () => {
       if (response.success) {
         return {
           success: true,
-          message: 'Registration successful! Please check your email for verification.',
+          message: response.message || 'Registration successful! Please check your email for verification.',
           user: response.data?.user
         }
       } else {
@@ -109,35 +151,31 @@ export const useAuth = () => {
     authState.value.error = null
 
     try {
-      // Use NextAuth.js signin endpoint
-      const response = await $fetch(`${apiBase}/api/auth/signin`, {
+      const response = await apiCall<{ user: User }>('/auth/login', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: credentials.email,
-          password: credentials.password,
-          callbackUrl: window.location.origin
+          password: credentials.password
         })
       })
 
-      // Check if login was successful by getting session
-      await checkAuth()
-      
-      if (authState.value.isAuthenticated) {
+      if (response.success && response.data?.user) {
+        authState.value.user = response.data.user
+        authState.value.isAuthenticated = true
         return {
           success: true,
-          message: 'Login successful!',
-          user: authState.value.user!
+          message: response.message || 'Login successful!',
+          user: response.data.user
         }
       } else {
+        authState.value.error = response.error || 'Login failed'
         return {
           success: false,
-          message: 'Invalid credentials'
+          message: response.error || 'Login failed'
         }
       }
     } catch (error: any) {
-      const errorMessage = error.data?.message || error.message || 'Login failed'
+      const errorMessage = error.message || 'Login failed'
       authState.value.error = errorMessage
       return {
         success: false,
@@ -151,9 +189,8 @@ export const useAuth = () => {
   // Logout user
   const logout = async (): Promise<void> => {
     try {
-      await $fetch(`${apiBase}/api/auth/signout`, {
-        method: 'POST',
-        credentials: 'include'
+      await apiCall('/auth/logout', {
+        method: 'POST'
       })
       
       authState.value.user = null
@@ -164,6 +201,10 @@ export const useAuth = () => {
       await navigateTo('/')
     } catch (error) {
       console.error('Logout error:', error)
+      // Even if logout fails on server, clear local state
+      authState.value.user = null
+      authState.value.isAuthenticated = false
+      authState.value.error = null
     }
   }
 
