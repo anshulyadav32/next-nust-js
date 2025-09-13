@@ -30,11 +30,30 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Keep example files
+!.env.example
 
 # PostgreSQL data directory
 postgres_data/
+
+# Local database files
+prisma/dev.db
+*.db
+
+# Local deployment scripts
+deploy-env.ps1
+remove-env.ps1
+
+# Documentation files
+DEPLOYMENT.md
 
 # vercel
 .vercel
@@ -44,3 +63,9 @@ postgres_data/
 next-env.d.ts
 
 /app/generated/prisma
+
+.vercel
+
+.vercel
+
+.vercel
