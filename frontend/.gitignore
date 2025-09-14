@@ -15,13 +15,7 @@ pnpm-debug.log*
 # Environment variables
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
 .env.*.local
-
-# Keep example files
-!.env.example
 
 # IDE
 .vscode
@@ -101,3 +95,4 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+.vercel

@@ -240,6 +240,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
 - [DiceBear](https://dicebear.com/) - Avatar library for profile images
 
+## 🌐 **Live Applications**
+
+Your full-stack authentication system is now live and deployed:
+
+- **Frontend (Nuxt.js)**: https://nuxtjs-frontend-8n17qov81-ay-xperts-projects.vercel.app
+- **Backend (Next.js)**: https://nextjs-backend-hfyv8dqya-ay-xperts-projects.vercel.app
+- **GitHub Repository**: https://github.com/anshulyadav32/login-system-nuxtjs
+
 ## 📞 Support
 
 If you have any questions or need help, please:

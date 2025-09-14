@@ -127,9 +127,9 @@
               Quick Actions
             </h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <NuxtLink to="/profile-settings" class="btn-primary text-center">
-                Profile Settings
-              </NuxtLink>
+              <button @click="updateProfile" class="btn-primary text-center">
+                Update Profile
+              </button>
               <button @click="changePassword" class="btn-secondary text-center">
                 Change Password
               </button>
@@ -186,7 +186,13 @@ const formatDate = (date: Date | string | undefined) => {
 }
 
 // Actions
-// Profile update is now handled by the dedicated profile-settings page
+const updateProfile = () => {
+  // TODO: Implement profile update
+  notification.value = 'Profile update feature coming soon!'
+  setTimeout(() => {
+    notification.value = ''
+  }, 3000)
+}
 
 const changePassword = () => {
   // TODO: Navigate to change password page

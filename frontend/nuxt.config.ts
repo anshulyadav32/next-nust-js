@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   // Runtime Config
   runtimeConfig: {
     public: {
-      apiBase: 'http://localhost:3001'
+      apiBase: process.env.NODE_ENV === 'production' ? 'https://nextjs-backend-hfyv8dqya-ay-xperts-projects.vercel.app' : 'http://localhost:3000'
     }
   },
   
@@ -35,22 +35,6 @@ export default defineNuxtConfig({
   // Server-side rendering
   ssr: true,
   
-  // Router configuration
-  router: {
-    options: {
-      // Ignore Vite HMR client requests to prevent Vue Router warnings
-      strict: false
-    }
-  },
-
-  // Vite configuration
-  vite: {
-    server: {
-      // Prevent Vite client requests from being handled by Vue Router
-      middlewareMode: false
-    }
-  },
-
   // App config
   app: {
     head: {
