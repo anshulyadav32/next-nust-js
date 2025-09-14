@@ -5,5 +5,11 @@
 </template>
 
 <script setup>
-// This ensures pages are properly loaded
+// Initialize auth on app start
+const { checkAuth } = useAuth()
+
+// Check authentication status when app loads
+onMounted(async () => {
+  await checkAuth()
+})
 </script>

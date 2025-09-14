@@ -1,12 +1,19 @@
 <template>
   <div class="auth-container">
-    <div class="auth-card">
+    <div class="auth-card fade-in">
       <div class="auth-header">
-        <h2 class="auth-title">Sign in to your account</h2>
+        <div class="flex justify-center mb-6">
+          <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+        </div>
+        <h2 class="auth-title">Welcome back!</h2>
         <p class="auth-subtitle">
-          Or 
-          <NuxtLink to="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
-            create a new account
+          Don't have an account? 
+          <NuxtLink to="/register" class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+            Sign up here
           </NuxtLink>
         </p>
       </div>
@@ -14,41 +21,49 @@
       <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
         <!-- Email Field -->
         <div class="form-group">
-          <label for="email" class="form-label">Email address</label>
+          <label for="email" class="form-label">
+            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+            </svg>
+            Email address
+          </label>
           <input
             id="email"
             v-model="form.email"
             type="email"
             required
             class="form-input"
-            :class="{ 'border-red-300': errors.email }"
-            placeholder="Enter your email"
+            :class="{ 'error': errors.email }"
+            placeholder="Enter your email address"
           />
           <p v-if="errors.email" class="error-message">{{ errors.email }}</p>
         </div>
 
         <!-- Password Field -->
         <div class="form-group">
-          <label for="password" class="form-label">Password</label>
+          <label for="password" class="form-label">
+            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Password
+          </label>
           <input
             id="password"
             v-model="form.password"
             type="password"
             required
             class="form-input"
-            :class="{ 'border-red-300': errors.password }"
+            :class="{ 'error': errors.password }"
             placeholder="Enter your password"
           />
           <p v-if="errors.password" class="error-message">{{ errors.password }}</p>
         </div>
 
         <!-- Forgot Password Link -->
-        <div class="flex items-center justify-between">
-          <div class="text-sm">
-            <NuxtLink to="/forgot-password" class="font-medium text-indigo-600 hover:text-indigo-500">
-              Forgot your password?
-            </NuxtLink>
-          </div>
+        <div class="flex items-center justify-end">
+          <NuxtLink to="/forgot-password" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+            Forgot your password?
+          </NuxtLink>
         </div>
 
         <!-- Error Message -->

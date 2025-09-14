@@ -35,6 +35,22 @@ export default defineNuxtConfig({
   // Server-side rendering
   ssr: true,
   
+  // Router configuration
+  router: {
+    options: {
+      // Ignore Vite HMR client requests to prevent Vue Router warnings
+      strict: false
+    }
+  },
+
+  // Vite configuration
+  vite: {
+    server: {
+      // Prevent Vite client requests from being handled by Vue Router
+      middlewareMode: false
+    }
+  },
+
   // App config
   app: {
     head: {

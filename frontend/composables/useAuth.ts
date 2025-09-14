@@ -4,6 +4,11 @@ interface User {
   id: string
   email: string
   name?: string
+  username?: string
+  firstName?: string
+  lastName?: string
+  phone?: string
+  bio?: string
   role: 'USER' | 'ADMIN'
   emailVerified: boolean
   profileImage?: string
@@ -53,8 +58,8 @@ interface ApiResponse<T = any> {
 
 export const useAuth = () => {
   const config = useRuntimeConfig()
-  // Use local API endpoints for demo
-  const apiBase = '/api'
+  // Use Next.js backend API
+  const apiBase = config.public.apiBase || 'http://localhost:3001'
 
   // Reactive state
   const authState = ref<AuthState>({
@@ -69,6 +74,7 @@ export const useAuth = () => {
     try {
       const response = await $fetch<ApiResponse<T>>(`${apiBase}${endpoint}`, {
         credentials: 'include',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
           ...options.headers
@@ -271,10 +277,7 @@ export const useAuth = () => {
     }
   }
 
-  // Initialize auth on app start
-  onMounted(async () => {
-    await checkAuth()
-  })
+  // Note: Auth initialization should be handled in app.vue or layout components
 
   return {
     // State

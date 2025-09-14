@@ -70,12 +70,12 @@ A modern, complete authentication system built with **Nuxt.js 3** frontend and *
    ```
 
 2. **Install dependencies**
-   ```bash
-   npm install
+```bash
+npm install
    ```
 
 3. **Set up environment variables**
-   ```bash
+```bash
    cp .env.example .env.local
    ```
    
@@ -96,7 +96,7 @@ A modern, complete authentication system built with **Nuxt.js 3** frontend and *
    ```
 
 4. **Start the development server**
-   ```bash
+```bash
    npm run dev
    ```
 
